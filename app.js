@@ -1,4 +1,4 @@
-const http = require('http');
+
 const fs = require('fs');
 
 const express = require('express');
@@ -12,9 +12,7 @@ app.use((req, res, next)=>{
 
 });
 app.use((req, res, next)=>{
-    console.log('this part of the file is now reachable');
+    res.send('this part of the file is now reachable');
    
-
 });
-const server = http.createServer(app);
-server.listen(8000);
+app.listen(8000);

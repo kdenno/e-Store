@@ -15,7 +15,7 @@ const app = express();
 app.use(bodyParser.urlencoded({extended: false}));
 
 // since router object imported to this file is  a valid middleware object therefore we can use .use()
-app.use('admin/', adminRoutes);
+app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
 

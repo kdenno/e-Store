@@ -10,10 +10,10 @@ const app = express();
 app.use(bodyParser.urlencoded({extended: false}));
 
 app.use('/add-product', (req, res)=>{
-    res.send('<form action="/product"><input type="submit" value="submit"></form>');
+    res.send('<form action="/product" method="POST"><input type="submit" value="submit"></form>');
 
 });
-app.use('/product', (req, res)=>{
+app.post('/product', (req, res)=>{
     console.log(req.body);
     res.redirect('/');
 

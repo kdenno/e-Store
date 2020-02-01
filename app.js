@@ -1,22 +1,20 @@
 const http = require('http');
 const fs = require('fs');
-const server = http.createServer((req, res) => {
-    const url = req.url;
-    const method = req.method;
-    if(url === '/'){
-        res.write('<html>');
-        res.write('<head>');
-        res.write('<body>');
-        res.write('<form action="/message" method="POST><input type="text" name="message"><button type="submit">Submit</button></form>');
-        return res.end();
-    };
-    if(url === '/message'){
-        fs.writeFileSync('msg.txt', 'Dummy data');
-        res.statusCode=302;
-        // Redirect request
-        res.setHeader('Location', '/');
-        return res.end();
 
-    }
+const express = require('express');
+// execute express coz the express package returns a function
+const app = express();
+// create middleware using the .use();
+app.use((req, res, next)=>{
+    console.log('in the middleware');
+    // allow the request to proceed by calling the next(); without it the request would never  jump out of this function
+    next();
+
 });
+app.use((req, res, next)=>{
+    console.log('this part of the file is now reachable');
+   
+
+});
+const server = http.createServer(app);
 server.listen(8000);

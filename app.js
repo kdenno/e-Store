@@ -19,4 +19,10 @@ app.use(adminRoutes);
 app.use(shopRoutes);
 
 
+// add middleware for 404
+app.use((req, res, next) =>{
+    res.status(404).send('<h1>Page Not Found</h1>');
+});
+
+
 app.listen(8000);

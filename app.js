@@ -14,6 +14,8 @@ const app = express();
 
 // by default, response from express is not parsed so use middleware and parse all responses
 app.use(bodyParser.urlencoded({extended: false}));
+// allow access to static files 
+app.use(express.static(path.join(__dirname, 'public')));
 
 // since router object imported to this file is  a valid middleware object therefore we can use .use()
 app.use('/admin', adminRoutes);

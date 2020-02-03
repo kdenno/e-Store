@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 
 
-const adminRoutes = require('./routes/admin');
+const adminData = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
 
@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // since router object imported to this file is  a valid middleware object therefore we can use .use()
-app.use('/admin', adminRoutes);
+app.use('/admin', adminData.routes);
 app.use(shopRoutes);
 
 

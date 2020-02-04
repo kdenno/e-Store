@@ -1,0 +1,40 @@
+<%- include('partials/head.ejs') %>
+
+<!-- head to app.js and allow access to the css static file -->
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/form.css">
+<link rel="stylesheet" href="/css/product.css">
+
+</head>
+
+<body>
+<%- include('partials/navigation.ejs') %>
+
+    <main>
+        <div class="grid">
+            <% if(prods.length > 0 ) { 
+                for(let product of prods) { %>
+            <article class="card product-item">
+                <header class="card_header">
+                    <h1 class="product_title"><%= product.title %></h1>
+                </header>
+                <div class="card_image">
+                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQTVD8wwBYlHxypJbN0REmqM6P0RyWdBB44qjju9Oh0zGazzYaQg&s" alt="" srcset="">
+                </div>
+                <div class="card_content">
+                    <h2 class="product_price">$199.9</h2>
+                    <p class="product_description">
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Qui modi voluptas corrupti fugit adipisci ipsam
+                    </p>
+                    <div class="card_actions">
+                        <button class="btn">Add To Cart</button>
+                    </div>
+                </div>
+            </article>
+            <% }
+        }else { %>
+                <h2>No Products Found </h2>
+                <% } %>
+        </div>
+    </main>
+<%- include('partials/foot.ejs') %>

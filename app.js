@@ -12,6 +12,11 @@ const shopRoutes = require('./routes/shop');
 // execute express coz the express package returns a function
 const app = express();
 
+// declare view engine
+app.set('view engine', 'ejs');
+// location of views
+app.set('views', 'views');
+
 // by default, response from express is not parsed so use middleware and parse all responses
 app.use(bodyParser.urlencoded({extended: false}));
 // allow access to static files 
@@ -24,7 +29,7 @@ app.use(shopRoutes);
 
 // add middleware for 404
 app.use((req, res, next) =>{
-    res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
+    res.status(404).render('404', {pageTitle: 'Page Not Found'});
 });
 
 

@@ -15,7 +15,8 @@ exports.createProduct = (req, res) => {
   res.redirect("/");
 };
 exports.getProducts = (req, res, next) => {
-  // render and pass data into the view
-  const products = Product.fetchAll();
-  res.render("shop", { prods: products, pageTitle: "Shop", path: "/" });
+  // call fetchAll with a callback function that will be called and products will passed to it as an argument
+  Product.fetchAll(products => {
+    res.render("shop", { prods: products, pageTitle: "Shop", path: "/" });
+  });
 };

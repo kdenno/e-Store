@@ -1,6 +1,44 @@
 <%- include('../partials/head.ejs') %>
-    </head>
 
-    <body>
-        <%- include('../partials/navigation.ejs') %>
-        <%- include('../partials/foot.ejs') %>
+<!-- head to app.js and allow access to the css static file -->
+
+<link rel="stylesheet" href="/css/form.css">
+<link rel="stylesheet" href="/css/product.css">
+
+</head>
+
+<body>
+<%- include('../partials/navigation.ejs') %>
+
+    <main>
+        <div class="grid">
+            <% if(prods.length > 0 ) { 
+                for(let product of prods) { %>
+            <article class="card product-item">
+                <header class="card_header">
+                    <h1 class="product_title"><%= product.title %></h1>
+                </header>
+                <div class="card_image">
+                    <img src="<%= product.imageUrl %>" alt="<%= product.title %>" srcset="">
+                </div>
+                <div class="card_content">
+                    <h2 class="product_price">$<%= product.price %></h2>
+                    <p class="product_description">
+                        <%= product.description %>
+                    </p>
+                    <div class="card_actions">
+                        <a href="/admin/edit-product" class="btn">Edit</a>
+                        <form action="/admin/delete-product" method="POST">
+                            <button type="submit" class="btn">Delete</button>
+                        </form>
+                        
+                    </div>
+                </div>
+            </article>
+            <% }
+        }else { %>
+                <h2>No Products Found </h2>
+                <% } %>
+        </div>
+    </main>
+<%- include('../partials/foot.ejs') %>

@@ -5,6 +5,18 @@ const fs = require("fs");
 
 // get path to file
 const p = path.join(path.dirname(process.mainModule.filename), "data", "products.json");
+function getProductsFromFile(cb) {
+  fs.readFile(p, (err, fileContent)=> {
+    if(err) {
+        cb([]);
+        return;
+
+    }
+    cb(JSON.parse(fileContent));
+
+});
+
+}
 
 module.exports = class Product {
   constructor(title, imageUrl, price, description ) {
@@ -14,6 +26,8 @@ module.exports = class Product {
     this.description = description;
   }
   save() {
+    // create dummy id for the product
+    this.id = Math.random().toString();
     // first get the filecontent 
     fs.readFile(p, (err, fileContent)=> {
         let products = []; 
@@ -33,14 +47,15 @@ module.exports = class Product {
   }
   static fetchAll(cb) {
       /* Now at the moment the callback for the readFile function is only working for that function but our inherent fetchAll function does not return anything and this will cause errors down the road so what do we do? we provide a callback to the fetchall() as an argument, and call it whenever the readfile callback has exucted and pass the results of the readFile() back to the sender */
-    fs.readFile(p, (err, fileContent)=> {
-        if(err) {
-            cb([]);
-            return;
+   getProductsFromFile(cb);
+  }
 
-        }
-        cb(JSON.parse(fileContent));
+  static fetchProduct(id, cb) {
+    getProductsFromFile((products)=> {
+      const product = products.find(p => p.id === id);
+      cb(product);
 
-    });
+    })
+
   }
 };

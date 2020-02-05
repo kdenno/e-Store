@@ -7,13 +7,16 @@ const fs = require("fs");
 const p = path.join(path.dirname(process.mainModule.filename), "data", "products.json");
 
 module.exports = class Product {
-  constructor(t) {
-    this.title = t;
+  constructor(title, imageUrl, price, description ) {
+    this.title = title;
+    this.imageUrl = imageUrl;
+    this.price = price;
+    this.description = description;
   }
   save() {
     // first get the filecontent 
     fs.readFile(p, (err, fileContent)=> {
-        let products = [];
+        let products = []; 
         if(!err) {
             // convert to json
             products = JSON.parse(fileContent)

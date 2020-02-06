@@ -3,9 +3,10 @@ const Product = require("../models/product");
 
 exports.addProduct = (req, res) => {
     // res.sendFile(path.join(rootPath, 'views', 'add-product.html'));
-    res.render("admin/add-product", {
+    res.render("admin/edit-product", {
       pageTitle: "Add Product",
-      path: "/admin/add-product"
+      path: "/admin/add-product",
+      editing: false
     });
   };
   
@@ -18,6 +19,30 @@ exports.addProduct = (req, res) => {
     product.save();
     res.redirect("/");
   };
+  
+  exports.editProduct = (req, res) => {
+    const prodId = req.params.productId;
+    Product.fetchProduct(prodId, (product)=>{
+      if(!product) {
+        return res.redirect('/');
+      }
+      const editMode = req.query.edit;
+      if(editMode == 'true') {
+        res.render("admin/edit-product", {
+          pageTitle: "Edit Product",
+          path: "/admin/edit-product",
+          editing: editMode,
+          product: product
+        });
+      }else {
+        res.redirect('/');
+      }
+  
+
+    });
+   
+   
+  };
   exports.getProducts = (req, res) => {
       Product.fetchAll((products)=>{
           res.render("admin/products", {prods: products, path: "/admin/admin-products", pageTitle: "Admin Products"});
@@ -25,3 +50,4 @@ exports.addProduct = (req, res) => {
       });
 
   }
+  

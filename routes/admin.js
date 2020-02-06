@@ -6,6 +6,6 @@ const adminController = require('../controllers/admin');
 router.get('/add-product', adminController.addProduct);
 router.get('/products', adminController.getProducts);
 router.post('/add-product', adminController.createProduct);
-
+router.get('/edit-product/:productId', adminController.editProduct);
 
 exports.routes = router;

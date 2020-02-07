@@ -42,4 +42,26 @@ module.exports = class Cart {
       });
     });
   }
+  static deleteCartProduct(id, productPrice) {
+    fs.readFile(p, (err, fileContent)=> {
+      if(err){
+        return;
+      }
+      const updatedCart = {...JSON.parse(fileContent)};
+      const theProduct = updatedCart.products.find(prod => prod.id === id);
+      const productIndex = updatedCart.products.findIndex(prod=>prod.id ===id);
+      // product quantity
+      const prodQty = theProduct.qty;
+      // remove product from cart 
+      updatedCart.products = updatedCart.products.filter(prod=> prod.id !== id);
+      // update total price
+      updatedCart.totalPrice = updatedCart.totalPrice - prodQty * productPrice;
+      // write back to file
+      fs.writeFile(p, JSON.stringify(updatedCart), (err)=>{
+    
+      });
+
+    });
+
+  }
 };

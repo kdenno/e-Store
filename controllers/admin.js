@@ -1,5 +1,6 @@
 // controls the products logic
 const Product = require("../models/product");
+const Cart = require("../models/cart");
 
 exports.addProduct = (req, res) => {
     // res.sendFile(path.join(rootPath, 'views', 'add-product.html'));
@@ -60,6 +61,13 @@ exports.addProduct = (req, res) => {
           res.render("admin/products", {prods: products, path: "/admin/admin-products", pageTitle: "Admin Products"});
 
       });
+
+  }
+  exports.deleteProduct= (req, res, next) => {
+    const productId = req.body.productId;
+    Product.deleteProduct(productId);
+   
+    res.redirect('/admin/products');
 
   }
   

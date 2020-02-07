@@ -2,6 +2,7 @@
 // const rootPath = require("../helpers/path");
 const path = require("path");
 const fs = require("fs");
+const Cart = require('./cart');
 
 // get path to file
 const p = path.join(
@@ -32,15 +33,15 @@ module.exports = class Product {
     getProductsFromFile(products => {
       if (this.id) {
         // product has an id so its an edit
-        const existingProductIndex = products.findIndex(prod => prod.id === this.id);
+        const existingProductIndex = products.findIndex(
+          prod => prod.id === this.id
+        );
         const updatedProducts = [...products];
         updatedProducts[existingProductIndex] = this;
         // re-write file
-        fs.writeFile(p, JSON.stringify(updatedProducts), (err)=> {
+        fs.writeFile(p, JSON.stringify(updatedProducts), err => {
           console.log(err);
         });
-
-
       } else {
         // create dummy id for the product
         this.id = Math.random().toString();
@@ -60,6 +61,21 @@ module.exports = class Product {
           });
         });
       }
+    });
+  }
+  static deleteProduct(id) {
+    getProductsFromFile(products => {
+      const theproduct = products.find(prod=> prod.id === id);
+      const updatedProducts = products.filter(prod => prod.id !== id);
+      // save file
+      fs.writeFile(p, JSON.stringify(updatedProducts), err => {
+        if(!err) {
+          // delete product from cart
+          Cart.deleteCartProduct(id, theproduct.price);
+
+
+        }
+      });
     });
   }
   static fetchAll(cb) {

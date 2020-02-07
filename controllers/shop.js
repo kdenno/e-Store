@@ -21,8 +21,7 @@ exports.getProduct = (req, res, next) => {
       path: "products"
     });
   });
-
-}
+};
 
 exports.getIndex = (req, res, next) => {
   // call fetchAll with a callback function that will be called and products will passed to it as an argument
@@ -31,15 +30,41 @@ exports.getIndex = (req, res, next) => {
   });
 };
 exports.getCart = (req, res, next) => {
-  res.render("shop/cart", { path: "cart", pageTitle: "Cart" });
+  // get all cart products
+  Cart.getCartProducts(cartproducts => {
+    const allproducts = [];
+    let productData;
+    Product.fetchAll(products => {
+      products.forEach(product => {
+        productData = cartproducts.products.find(
+          prod => prod.id === product.id
+        );
+        if(productData){
+          allproducts.push({pdata: product, qty: productData.qty});
+
+        }
+      });
+
+      res.render("shop/cart", {
+        path: "cart",
+        products: allproducts,
+        pageTitle: "Cart"
+      });
+    });
+  });
 };
-exports.postCart= (req, res, next)=> {
+exports.postCart = (req, res, next) => {
   const productid = req.body.prodId;
-res.redirect('/cart');
+  // get product price
+  Product.fetchProduct(productid, (product)=> {
+    Cart.addProduct(productid, product.price);
+  res.redirect("/cart");
+  });
+  
 };
 exports.getCheckout = (req, res, next) => {
   res.render("shop/checkout", { path: "checkout", pageTitle: "Checkout" });
 };
-exports.getOrders = (req, res, next)=> {
-  res.render("shop/orders", {path: "orders", pageTitle: "Orders"});
-}
+exports.getOrders = (req, res, next) => {
+  res.render("shop/orders", { path: "orders", pageTitle: "Orders" });
+};

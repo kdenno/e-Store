@@ -65,10 +65,13 @@ exports.addProduct = (req, res) => {
 
   }
   exports.getProducts = (req, res) => {
-      Product.fetchAll((products)=>{
-          res.render("admin/products", {prods: products, path: "/admin/admin-products", pageTitle: "Admin Products"});
+    Product.findAll().then(products=> {
+      res.render("admin/products", {prods: products, path: "/admin/admin-products", pageTitle: "Admin Products"});
 
-      });
+    }).catch(err=>{
+      console.log(err);
+    });
+   
 
   }
   exports.deleteProduct= (req, res, next) => {

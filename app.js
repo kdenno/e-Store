@@ -33,7 +33,6 @@ app.use(NotFoundController.NotFound);
 
 // sync modules to tables
 database.sync().then(result=> {
-    console.log(result);
     app.listen(8000);
 }).catch(err => {
     console.log('error occured');

@@ -2,31 +2,36 @@ const Product = require("../models/product");
 const Cart = require("../models/cart");
 
 exports.getProducts = (req, res, next) => {
-  // call fetchAll with a callback function that will be called and products will passed to it as an argument
-  Product.fetchAll(products => {
+  Product.findAll().then(products=>{
     res.render("shop/product-list", {
       prods: products,
       pageTitle: "Shop",
       path: "products"
     });
+  }).catch(err => {
+    console.log(err);
   });
+ 
 };
 
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.prodId;
-  Product.fetchProduct(prodId, product => {
+  Product.findByPk(prodId).then(product => {
     res.render("shop/product-detail", {
       product: product,
       pageTitle: product.title,
       path: "products"
     });
+  }).catch(err => {
+    console.log('err');
   });
 };
 
 exports.getIndex = (req, res, next) => {
-  // call fetchAll with a callback function that will be called and products will passed to it as an argument
-  Product.fetchAll(products => {
+  Product.findAll().then(products => {
     res.render("shop/index", { prods: products, pageTitle: "Shop", path: "/" });
+  }).catch(err => {
+    console.log(err);
   });
 };
 exports.getCart = (req, res, next) => {
@@ -34,7 +39,7 @@ exports.getCart = (req, res, next) => {
   Cart.getCartProducts(cartproducts => {
     const allproducts = [];
     let productData;
-    Product.fetchAll(products => {
+    Product.findAll().then(products => {
       products.forEach(product => {
         productData = cartproducts.products.find(
           prod => prod.id === product.id

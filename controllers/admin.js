@@ -23,7 +23,7 @@ exports.createProduct = (req, res) => {
     description: description
   })
     .then(result => {
-      console.log(result);
+      res.redirect("/admin/products");
     })
     .catch(err => {
       console.log(err);
@@ -87,7 +87,13 @@ exports.getProducts = (req, res) => {
 };
 exports.deleteProduct = (req, res, next) => {
   const productId = req.body.productId;
-  Product.deleteProduct(productId);
-
-  res.redirect("/admin/products");
+  Product.findByPk(productId)
+    .then(product => {
+      return product.destroy();
+    })
+    .then(result => {
+      res.redirect("/admin/products");
+      console.log(result);
+    })
+    .catch(err => console.log(err));
 };

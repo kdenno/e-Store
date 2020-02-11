@@ -8,6 +8,8 @@ const shopRoutes = require("./routes/shop");
 const NotFoundController = require("./controllers/404controller");
 // import database
 const database = require("./util/database");
+const Product = require('./models/product');
+const User = require('./models/user');
 
 // execute express coz the express package returns a function
 const app = express();
@@ -31,8 +33,12 @@ app.use(shopRoutes);
 // add middleware for 404
 app.use(NotFoundController.NotFound);
 
+// create relations
+Product.belongsTo(User, {constraints: true, onDelete: 'CASCADE'});
+User.hasMany(Product);
+
 // sync modules to tables
-database.sync().then(result=> {
+database.sync({force: true}).then(result=> {
     app.listen(8000);
 }).catch(err => {
     console.log('error occured');

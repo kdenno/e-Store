@@ -10,6 +10,8 @@ const NotFoundController = require("./controllers/404controller");
 const database = require("./util/database");
 const Product = require("./models/product");
 const User = require("./models/user");
+const Cart = require("./models/cart");
+const CartItem = require("./models/cart-item");
 
 // execute express coz the express package returns a function
 const app = express();
@@ -46,10 +48,14 @@ app.use(NotFoundController.NotFound);
 // create relations
 Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 User.hasMany(Product);
+User.hasOne(Cart);
+Cart.belongsTo(User);
+Cart.belongsToMany(Product, {through: CartItem}); // for manytomany to work they need an intemediary table that will connect them and for that you use through
+Product.belongsToMany(Cart, {through: CartItem});
 
 // sync modules to tables
 database
-  .sync()
+  .sync({force: true})
   .then(result => {
     return User.findByPk(1);
   })

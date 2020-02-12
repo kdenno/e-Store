@@ -36,26 +36,22 @@ exports.getIndex = (req, res, next) => {
 };
 exports.getCart = (req, res, next) => {
   // get all cart products
-  Cart.getCartProducts(cartproducts => {
-    const allproducts = [];
-    let productData;
-    Product.findAll().then(products => {
-      products.forEach(product => {
-        productData = cartproducts.products.find(
-          prod => prod.id === product.id
-        );
-        if (productData) {
-          allproducts.push({ pdata: product, qty: productData.qty });
-        }
-      });
+      
+      req.user.getCart().then(cart => {
+        return cart.getProducts();// getProducts is a magic method that was created by the relationship
+      
+      })
+      .then(products => {
+        res.render("shop/cart", {
+          path: "cart",
+          products: products,
+          pageTitle: "Cart"
+        });
+        
+      }).catch(err => console.log(err));
 
-      res.render("shop/cart", {
-        path: "cart",
-        products: allproducts,
-        pageTitle: "Cart"
-      });
-    });
-  });
+  
+  
 };
 exports.postCart = (req, res, next) => {
   const productid = req.body.prodId;

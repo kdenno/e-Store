@@ -55,7 +55,7 @@ Product.belongsToMany(Cart, {through: CartItem});
 
 // sync modules to tables
 database
-  .sync({force: true})
+  .sync()
   .then(result => {
     return User.findByPk(1);
   })
@@ -67,6 +67,10 @@ database
     return user;
   })
   .then(user => {
+    // go ahead and create cart for the user
+    return user.createCart();
+  }).
+  then(cart => {
     app.listen(8000);
   })
   .catch(err => {

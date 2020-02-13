@@ -118,3 +118,33 @@ exports.getCheckout = (req, res, next) => {
 exports.getOrders = (req, res, next) => {
   res.render("shop/orders", { path: "orders", pageTitle: "Orders" });
 };
+
+// orders
+exports.createOrder = (req, res, next) => {
+  // get all cart items and move them to an order
+  req.user
+    .getCart()
+    .then(cart => {
+      // get all cart products
+      return cart.getProducts();
+    })
+    .then(products => {
+      // just as cart is related to a user is order so create an order for this user
+      return req.user
+        .createOrder()
+        .then(order => {
+          // connect order to products
+          return order.addProducts(
+            products.map(product => {
+              product.orderItem = { quantity: product.cartItem.quantity };
+              return product;
+            })
+          ); // modify products to add quantity for each product
+        })
+        .catch(err => console.log());
+    })
+    .then(result => {
+      res.redirect("/orders");
+    })
+    .catch(err => console.log(err));
+};

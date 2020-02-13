@@ -77,7 +77,7 @@ exports.postCart = (req, res, next) => {
       if (product.length > 0) {
         cartproduct = product[0];
       }
-      
+
       if (cartproduct) {
         // product exists, update its quantity
         const oldquantity = cartproduct.cartItem.quantity;
@@ -90,18 +90,27 @@ exports.postCart = (req, res, next) => {
       fetchedCart.addProduct(product, {
         through: { quantity: newquantity }
       }); // add product to cart and update the intermediarry table
-    
+
       res.redirect("/cart");
     })
     .catch(err => console.log(err));
 };
 exports.deleteCartItem = (req, res, next) => {
   const prodId = req.body.productId;
-  // get product
-  Product.fetchProduct(prodId, product => {
-    Cart.deleteCartProduct(prodId, product.price);
-    res.redirect("/cart");
-  });
+  // get user's cart
+  req.user
+    .getCart()
+    .then(cart => {
+      return cart.getProducts({ where: { id: prodId } });
+    })
+    .then(products => {
+      const product = products[0];
+      return product.cartItem.destroy();
+    })
+    .then(result => {
+      res.redirect("/cart");
+    })
+    .catch(err => console.log(err));
 };
 exports.getCheckout = (req, res, next) => {
   res.render("shop/checkout", { path: "checkout", pageTitle: "Checkout" });

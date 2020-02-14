@@ -1,11 +1,14 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
-const sequelize = require("sequelize");
+// const sequelize = require("sequelize");
 
-const adminData = require("./routes/admin");
-const shopRoutes = require("./routes/shop");
+ const adminData = require("./routes/admin");
+// const shopRoutes = require("./routes/shop");
 const NotFoundController = require("./controllers/404controller");
+const connection = require('./util/database').connect;
+/*
+
 // import database
 const database = require("./util/database");
 const Product = require("./models/product");
@@ -14,6 +17,8 @@ const Cart = require("./models/cart");
 const CartItem = require("./models/cart-item");
 const Order = require("./models/order");
 const OrderItem = require("./models/order-item");
+
+*/
 
 
 // execute express coz the express package returns a function
@@ -29,6 +34,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // allow access to static files
 app.use(express.static(path.join(__dirname, "public")));
 
+/*
+
 // create middleware for user
 app.use((req, res, next) => {
     User.findByPk(1)
@@ -39,15 +46,18 @@ app.use((req, res, next) => {
       .catch(err => console.log(err));
   });
 
+  
+  */
+
 // since router object imported to this file is  a valid middleware object therefore we can use .use()
-app.use("/admin", adminData.routes);
-app.use(shopRoutes);
+ app.use("/admin", adminData.routes);
+// app.use(shopRoutes);
 
 // add middleware for 404
 app.use(NotFoundController.NotFound);
 
 
-
+/*
 // create relations
 Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 User.hasMany(Product);
@@ -82,3 +92,10 @@ database
   .catch(err => {
     console.log("error occured");
   });
+  
+  */
+ connection(()=> {
+   // start the server
+   app.listen(8000);
+
+ });

@@ -116,15 +116,26 @@ exports.getCheckout = (req, res, next) => {
   res.render("shop/checkout", { path: "checkout", pageTitle: "Checkout" });
 };
 exports.getOrders = (req, res, next) => {
-  res.render("shop/orders", { path: "orders", pageTitle: "Orders" });
+  req.user
+    .getOrders({include: ['products']}) // get orders but include products per order
+    .then(orders => {
+      res.render("shop/orders", {
+        path: "orders",
+        pageTitle: "Orders",
+        orders: orders
+      });
+    })
+    .catch(err => console.log(err));
 };
 
 // orders
 exports.createOrder = (req, res, next) => {
   // get all cart items and move them to an order
+  let fetchedCart;
   req.user
     .getCart()
     .then(cart => {
+      fetchedCart = cart;
       // get all cart products
       return cart.getProducts();
     })
@@ -142,6 +153,10 @@ exports.createOrder = (req, res, next) => {
           ); // modify products to add quantity for each product
         })
         .catch(err => console.log());
+    })
+    .then(result => {
+      // reset cart
+      return fetchedCart.setProducts(null);
     })
     .then(result => {
       res.redirect("/orders");

@@ -34,20 +34,22 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // allow access to static files
 app.use(express.static(path.join(__dirname, "public")));
 
-/*
+
 
 // create middleware for user
 app.use((req, res, next) => {
+    /*
     User.findByPk(1)
       .then(user => {
         req.user = user;
         next();
       })
-      .catch(err => console.log(err));
+      .catch(err => console.log(err)); */
+      next();
   });
 
   
-  */
+  
 
 // since router object imported to this file is  a valid middleware object therefore we can use .use()
  app.use("/admin", adminData.routes);

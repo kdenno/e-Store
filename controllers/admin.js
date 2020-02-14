@@ -1,6 +1,6 @@
 // controls the products logic
 const Product = require("../models/product");
-const Cart = require("../models/cart");
+// const Cart = require("../models/cart");
 
 exports.addProduct = (req, res) => {
   // res.sendFile(path.join(rootPath, 'views', 'add-product.html'));
@@ -16,6 +16,13 @@ exports.createProduct = (req, res) => {
   const imgUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
+  const product = new Product(title, price, description, imgUrl);
+  product.save().then(result => {
+    res.redirect("/");
+
+  }).catch(err => console.log(err));
+
+  /*
   req.user
     .createProduct({
       title: title,
@@ -29,9 +36,9 @@ exports.createProduct = (req, res) => {
     .catch(err => {
       console.log(err);
     });
-  res.redirect("/");
+    */
 };
-
+/*
 exports.editProduct = (req, res) => {
   const prodId = req.params.productId;
   req.user
@@ -101,3 +108,5 @@ exports.deleteProduct = (req, res, next) => {
     })
     .catch(err => console.log(err));
 };
+
+*/

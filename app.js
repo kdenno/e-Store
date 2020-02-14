@@ -4,7 +4,7 @@ const path = require("path");
 // const sequelize = require("sequelize");
 
  const adminData = require("./routes/admin");
-// const shopRoutes = require("./routes/shop");
+ const shopRoutes = require("./routes/shop");
 const NotFoundController = require("./controllers/404controller");
 const connection = require('./util/database').connect;
 /*
@@ -53,7 +53,7 @@ app.use((req, res, next) => {
 
 // since router object imported to this file is  a valid middleware object therefore we can use .use()
  app.use("/admin", adminData.routes);
-// app.use(shopRoutes);
+ app.use(shopRoutes);
 
 // add middleware for 404
 app.use(NotFoundController.NotFound);

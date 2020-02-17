@@ -7,6 +7,7 @@ const path = require("path");
  const shopRoutes = require("./routes/shop");
 const NotFoundController = require("./controllers/404controller");
 const connection = require('./util/database').connect;
+const User = require('./models/user');
 /*
 
 // import database
@@ -38,13 +39,13 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // create middleware for user
 app.use((req, res, next) => {
-    /*
-    User.findByPk(1)
+    
+    User.findUserById('5e4a8d9f2b5b520faf5477fd')
       .then(user => {
         req.user = user;
         next();
       })
-      .catch(err => console.log(err)); */
+      .catch(err => console.log(err)); 
       next();
   });
 

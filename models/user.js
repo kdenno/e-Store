@@ -13,7 +13,7 @@ const User = connection.define('user', {
   name: sequelize.STRING
 });
 */
-const getDb = require("../util/database");
+const getDb = require("../util/database").getDb;
 const mongoDb = require("mongodb");
 class User {
   constructor(username, email) {
@@ -28,9 +28,9 @@ class User {
     const db = getDb();
     return db
       .collection("users")
-      .findOne({ id: new mongoDb.ObjectId(userId) })
-      .then(result => console.log(result))
-      .catch(err => console.log(err));
+      .findOne({ _id: new mongoDb.ObjectId(userId) })
+      .then(result => { return result; })
+      .catch(err => console.log(err)); 
   }
 }
 module.exports = User;

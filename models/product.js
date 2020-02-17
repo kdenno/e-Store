@@ -1,19 +1,27 @@
 //const Sequelize = require('sequelize');
-const mongoDb = require('mongodb');
+const mongoDb = require("mongodb");
 const getDb = require("../util/database").getDb;
 class Product {
-  constructor(title, price, description, imageUrl) {
+  constructor(title, price, description, imageUrl, id) {
     this.title = title;
     this.price = price;
     this.description = description;
     this.imageUrl = imageUrl;
+    this._id = new mongoDb.ObjectID(id);
   }
 
   save() {
     const db = getDb();
-    return db
-      .collection("products")
-      .insertOne(this)
+    let dbOp;
+    if (this._id) {
+      // update product
+      dbOp = db
+        .collection("products")
+        .updateOne({ _id: this._id }, { $set: this }); // set is a special key word understoon by mongo and helps us dictate on how to update the data
+    } else {
+      dbOp = db.collection("products").insertOne(this);
+    }
+    return dbOp
       .then(result => {
         console.log(result);
       })
@@ -23,7 +31,7 @@ class Product {
   }
 
   static fetchAll() {
-      const db = getDb();
+    const db = getDb();
     return db
       .collection("products")
       .find()
@@ -34,11 +42,24 @@ class Product {
       .catch(err => console.log(err));
   }
   static fetchById(id) {
-      const db = getDb();
-      return db.collection('products').findOne({_id: new mongoDb.ObjectID(id)}).then(product => {
-          console.log(product);
-          return product;
-      }).catch(err => console.log(err));
+    const db = getDb();
+    return db
+      .collection("products")
+      .findOne({ _id: new mongoDb.ObjectID(id) })
+      .then(product => {
+        console.log(product);
+        return product;
+      })
+      .catch(err => console.log(err));
+  }
+
+  static deleteById(prodId) {
+    const db = getDb();
+    return db
+      .collection("products")
+      .deleteOne({ _id: new mongoDb.ObjectID(prodId) })
+      .then(result => console.log("product deleted"))
+      .catch(err => console.log(err));
   }
 }
 

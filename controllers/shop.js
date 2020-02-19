@@ -117,7 +117,12 @@ exports.postCart = (req, res, next) => {
 };
 exports.deleteCartItem = (req, res, next) => {
   const prodId = req.body.productId;
+  req.theuser.deleteCartItem(prodId).then(result => {
+    res.redirect("/cart");
+
+  }).catch(err => console.log(err));
   // get user's cart
+  /*
   req.user
     .getCart()
     .then(cart => {
@@ -130,12 +135,23 @@ exports.deleteCartItem = (req, res, next) => {
     .then(result => {
       res.redirect("/cart");
     })
-    .catch(err => console.log(err));
+    .catch(err => console.log(err)); 
+    */
 };
 exports.getCheckout = (req, res, next) => {
   res.render("shop/checkout", { path: "checkout", pageTitle: "Checkout" });
 };
 exports.getOrders = (req, res, next) => {
+  req.theuser.getOrders().then(orders => {
+    res.render("shop/orders", {
+      path: "orders",
+      pageTitle: "Orders",
+      orders: orders
+    });
+
+  }).catch()
+  
+  /*
   req.user
     .getOrders({ include: ["products"] }) // get orders but include products per order
     .then(orders => {
@@ -145,11 +161,16 @@ exports.getOrders = (req, res, next) => {
         orders: orders
       });
     })
-    .catch(err => console.log(err));
+    .catch(err => console.log(err)); */
 };
 
 // orders
 exports.createOrder = (req, res, next) => {
+  req.theuser.createOrder().then(result => {
+    res.redirect("/orders");
+
+  }).catch(err => console.log(err))
+  /*
   // get all cart items and move them to an order
   let fetchedCart;
   req.user
@@ -182,4 +203,5 @@ exports.createOrder = (req, res, next) => {
       res.redirect("/orders");
     })
     .catch(err => console.log(err));
+     */
 };

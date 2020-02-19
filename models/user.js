@@ -82,9 +82,61 @@ class User {
               return i.productId.toString() == p._id.toString();
             }).quantity
           };
-        })
+        });
       })
-      .catch(err=> console.log(err));
+      .catch(err => console.log(err));
+  }
+
+  deleteCartItem(prodId) {
+    const updatedCartItems = this.cart.items.filter(item => {
+      return item.productId.toString() !== prodId;
+    });
+    // update the database
+    const db = getDb();
+    return db
+      .collection("users")
+      .updateOne(
+        { _id: new mongoDb.ObjectID(this.userid) },
+        { $set: { cart: updatedCartItems } }
+      );
+  }
+
+  createOrder() {
+    const db = getDb();
+    // since get cart has details about the products in the cart, lets use it
+    return this.getCart()
+      .then(products => {
+        const order = {
+          items: products,
+          user: { _id: new mongoDb.ObjectID(this.userid), email: this.name }
+        };
+        return db
+          .collection("orders")
+          .insertOne(order)
+          .then(result => {
+            // clear cart
+            this.cart = { items: [] };
+            // update database
+            return db
+              .collection("users")
+              .updateOne(
+                { _id: new mongoDb.ObjectID(this.userid) },
+                { $set: { cart: { items: [] } } }
+              );
+          });
+      })
+      .catch(err => console.log(err));
+  }
+  getOrders() {
+    const db = getDb();
+    return db
+      .collection("orders")
+      .find({ "user._id": new mongoDb.ObjectID(this._id) })
+      .toArray()
+      .then(result => {
+        return result;
+      })
+      .catch(err => console.log(err));
   }
 }
 module.exports = User;

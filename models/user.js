@@ -26,7 +26,7 @@ class User {
     const db = getDb();
     return db.collection("users").insertOne(this);
   }
-  
+
   static findUserById(userId) {
     const db = getDb();
     return db
@@ -40,10 +40,21 @@ class User {
 
   // since we have a tight one on one relationship btn user and cart, we can have the add to cart method on the model
   addToCart(product) {
-    /* const cartProduct = this.cart.findIndex(cp => {
-      return product._id === cp._id;
-    }); */
-    const updatedCart = { items: [{ productId: new mongoDb.ObjectID(product._id), quantity: 1 }] };
+    const cartProductIndex = this.cart.items.findIndex(cp => {
+      return product._id.toString() == cp.productId.toString();
+    });
+    let newquantity = 1;
+    let updatedCartItems = [...this.cart.items];
+    if (cartProductIndex >= 0) {
+      newquantity = this.cart.items[cartProductIndex].quantity + 1;
+      updatedCartItems[cartProductIndex].quantity = newquantity;
+    }else {
+      updatedCartItems.push({productId: new mongoDb.ObjectID(product._id), quantity: newquantity});
+
+    }
+    const updatedCart = {
+      items: updatedCartItems
+    };
     const db = getDb();
     return db
       .collection("users")

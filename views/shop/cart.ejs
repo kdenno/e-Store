@@ -6,13 +6,13 @@
 
 <body>
 <%- include('../partials/navigation.ejs') %>
-<main>
+<main style="width: 1000px; margin: 0 auto;">
     <% if(products.length > 0) {
         products.forEach(product =>{ %>
-            <ul>
-            <li><%= product.title %> (<%=product.cartItem.quantity%>)
+            <ul class="centered">
+            <li><%= product.title %> (<%=product.quantity%>)
                 <form action="/cart-delete-item" method="POST">
-                    <input type="hidden" name="productId" value="<%=product.id%>">
+                    <input type="hidden" name="productId" value="<%=product._id%>">
                     <button type="submit" class="btn">Delete</button>
                 </form>
             </li>
@@ -31,4 +31,4 @@
 
    <% }%>
 </main>
-<%- include('../partials/foot.ejs') %>
+<%- include('../partials/foot.ejs') %> 

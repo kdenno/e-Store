@@ -31,6 +31,18 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
+  Product.find()
+    .then(products => {
+      res.render("shop/index", {
+        prods: products,
+        pageTitle: "Shop",
+        path: "/"
+      });
+    })
+    .catch(err => {
+      console.log(err);
+    }); 
+  /*
   Product.fetchAll()
     .then(products => {
       res.render("shop/index", {
@@ -41,7 +53,8 @@ exports.getIndex = (req, res, next) => {
     })
     .catch(err => {
       console.log(err);
-    });
+    }); 
+    */
 };
 exports.getCart = (req, res, next) => {
   // get all cart products

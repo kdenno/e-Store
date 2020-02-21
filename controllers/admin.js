@@ -116,6 +116,18 @@ exports.updateProduct = (req, res, next) => {
     .catch(err => console.log(err));
 };
 exports.getProducts = (req, res) => {
+  Product.find()
+    .then(products => {
+      res.render("admin/products", {
+        prods: products,
+        path: "/admin/admin-products",
+        pageTitle: "Admin Products"
+      });
+    })
+    .catch(err => console.log(err));
+
+  /*
+  // using mongoDB
   Product.fetchAll()
     .then(products => {
       res.render("admin/products", {
@@ -125,6 +137,7 @@ exports.getProducts = (req, res) => {
       });
     })
     .catch(err => console.log(err));
+    */
   /*
   req.user.getProducts() 
     .then(products => {

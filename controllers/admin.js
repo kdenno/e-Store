@@ -162,9 +162,18 @@ exports.getProducts = (req, res) => {
 
 exports.deleteProduct = (req, res, next) => {
   const productId = req.body.productId;
+  Product.findByIdAndRemove(productId)
+    .then(() => {
+      res.redirect("/admin/products");
+    })
+    .catch(err => {
+      console.log(err);
+    });
+  /*
   Product.deleteById(productId)
     .then(() => {
       res.redirect("/admin/products");
     })
-    .catch(err => console.log(err));
+    .catch(err => console.log(err)); 
+    */
 };

@@ -1,5 +1,5 @@
 const Product = require("../models/product");
-// const Cart = require("../models/cart");
+const Order = require("../models/order");
 
 exports.getProducts = (req, res, next) => {
   Product.fetchAll()
@@ -189,7 +189,19 @@ exports.getOrders = (req, res, next) => {
 // orders
 exports.createOrder = (req, res, next) => {
   req.theuser
-    .createOrder()
+    .populate("cart.items.productId")
+    .execPopulate()
+    .then(user => {
+      const products = user.cart.items.map(i => {
+        return { product: { ...i.productId._doc }, quantity: i.quantity }; // productId has alot of meta data so use ._doc to get exact data we want
+      });
+      const order = new Order({
+        products: products,
+        name: req.theuser.name,
+        userId: req.theuser._id
+      });
+      return order.save();
+    })
     .then(result => {
       res.redirect("/orders");
     })

@@ -52,7 +52,7 @@ exports.createProduct = (req, res) => {
 
 exports.editProduct = (req, res) => {
   const prodId = req.params.productId;
-  Product.fetchById(prodId)
+  Product.findById(prodId)
     .then(product => {
       if (!product) {
         return res.redirect("/");
@@ -100,19 +100,27 @@ exports.updateProduct = (req, res, next) => {
   const updatedImageUrl = req.body.imageUrl;
   const updatedPrice = req.body.price;
   const updatedDesc = req.body.description;
-  const product = new Product(
-    updatedTitle,
-    updatedPrice,
-    updatedDesc,
-    updatedImageUrl,
-    productId
-  );
-
-  product
-    .save()
+  // const product = new Product(
+  //   updatedTitle,
+  //   updatedPrice,
+  //   updatedDesc,
+  //   updatedImageUrl,
+  //   productId
+  // );
+  const product = Product.findById(productId)
+    .then(product => {
+      // got back a full mongoose object, go ahead and update the fields
+      product.title = updatedTitle;
+      product.imageUrl = updatedImageUrl;
+      product.price = updatedPrice;
+      product.description = updatedDesc;
+      // save product
+      return product.save();
+    })
     .then(result => {
       res.redirect("/admin/products");
     })
+
     .catch(err => console.log(err));
 };
 exports.getProducts = (req, res) => {

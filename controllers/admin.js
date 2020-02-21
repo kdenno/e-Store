@@ -17,16 +17,15 @@ exports.createProduct = (req, res) => {
   const imgUrl = req.body.imageUrl;
   const price = req.body.price;
   const description = req.body.description;
-  console.log(req.theuser);
-  const userid = req.theuser._id;
-  const product = new Product(
-    title,
-    price,
-    description,
-    imgUrl,
-    null,
-    userid
-  );
+  // const userid = req.theuser._id;
+  // const product = new Product(title,price,description,imgUrl,null,userid);
+  const product = new Product({
+    title: title,
+    price: price,
+    description: description,
+    imageUrl: imgUrl
+  });
+  // now we'll use the save method but this time its not defined in the product model but its the mongoose save();
   product
     .save()
     .then(result => {

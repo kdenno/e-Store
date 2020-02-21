@@ -65,7 +65,7 @@ class Product {
       })
       .catch(err => console.log(err));
   }
-  static fetchById(id) {
+  static findById(id) {
     const db = getDb();
     return db
       .collection("products")

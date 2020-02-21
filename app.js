@@ -3,11 +3,12 @@ const bodyParser = require("body-parser");
 const path = require("path");
 // const sequelize = require("sequelize");
 
- const adminData = require("./routes/admin");
- const shopRoutes = require("./routes/shop");
+const adminData = require("./routes/admin");
+const shopRoutes = require("./routes/shop");
 const NotFoundController = require("./controllers/404controller");
-const connection = require('./util/database').connect;
-const User = require('./models/user');
+// const connection = require('./util/database').connect;
+const User = require("./models/user");
+const mongoose = require("mongoose");
 /*
 
 // import database
@@ -20,7 +21,6 @@ const Order = require("./models/order");
 const OrderItem = require("./models/order-item");
 
 */
-
 
 // execute express coz the express package returns a function
 const app = express();
@@ -35,30 +35,22 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // allow access to static files
 app.use(express.static(path.join(__dirname, "public")));
 
-
-
 // create middleware for user
 app.use((req, res, next) => {
-    
-    User.findUserById('5e4a8d9f2b5b520faf5477fd')
-      .then(user => {
-        req.theuser = new User(user.name, user.email, user.cart, user._id);
-        next();
-      })
-      .catch(err => console.log(err)); 
-      
-  });
-
-  
-  
+  User.findUserById("5e4a8d9f2b5b520faf5477fd")
+    .then(user => {
+      req.theuser = new User(user.name, user.email, user.cart, user._id);
+      next();
+    })
+    .catch(err => console.log(err));
+});
 
 // since router object imported to this file is  a valid middleware object therefore we can use .use()
- app.use("/admin", adminData.routes);
- app.use(shopRoutes);
+app.use("/admin", adminData.routes);
+app.use(shopRoutes);
 
 // add middleware for 404
 app.use(NotFoundController.NotFound);
-
 
 /*
 // create relations
@@ -97,8 +89,22 @@ database
   });
   
   */
+// connnect with mongoose
+mongoose
+  .connect(
+    "mongodb+srv://node-complete:Inventions@256@cluster0-k1a0c.mongodb.net/test?retryWrites=true&w=majority"
+  )
+  .then(result => {
+    app.listen(8000);
+  })
+  .catch(err => {
+    console.log(err);
+  });
+/*
+ // connnect with mongoDB
  connection(()=> {
    // start the server
    app.listen(8000);
 
- });
+ }); 
+ */

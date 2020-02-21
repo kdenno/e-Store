@@ -7,7 +7,7 @@ const adminData = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const NotFoundController = require("./controllers/404controller");
 // const connection = require('./util/database').connect;
- // const User = require("./models/user");
+ const User = require("./models/user");
 const mongoose = require("mongoose");
 /*
 
@@ -37,13 +37,13 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // create middleware for user
 app.use((req, res, next) => {
-  next();
-  // User.findUserById("5e4a8d9f2b5b520faf5477fd")
-  //   .then(user => {
-  //     req.theuser = new User(user.name, user.email, user.cart, user._id);
-  //     next();
-  //   })
-  //   .catch(err => console.log(err));
+  
+  User.findById("5e4fc09d7f3ac60327e0d300")
+    .then(user => {
+      req.theuser = user;
+      next();
+    })
+    .catch(err => console.log(err));
 });
 
 // since router object imported to this file is  a valid middleware object therefore we can use .use()
@@ -93,9 +93,25 @@ database
 // connnect with mongoose
 mongoose
   .connect(
-    "mongodb+srv://node-complete:Inventions@256@cluster0-k1a0c.mongodb.net/test?retryWrites=true&w=majority"
+    "mongodb+srv://node-complete:B6ANyfkEveghapdK@cluster0-k1a0c.mongodb.net/test?retryWrites=Shop&w=majority"
   )
   .then(result => {
+    User.findOne()
+      .then(user => {
+        if (!user) {
+          // create a new user
+          const theuser = new User({
+            name: "Max",
+            email: "max@test.com",
+            cart: { items: [] }
+          });
+          theuser.save();
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+
     app.listen(8000);
   })
   .catch(err => {

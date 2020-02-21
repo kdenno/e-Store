@@ -1,3 +1,26 @@
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+const userSchema = new Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String,
+    required: true
+  },
+  cart: {
+    items: [
+      {
+        productId: { type: Schema.Types.ObjectId, required: true },
+        quantity: { type: Number, required: true }
+      }
+    ]
+  }
+});
+
+module.exports = mongoose.model("User", userSchema);
+
 /*
 const sequelize = require("sequelize");
 const connection = require("../util/database");
@@ -13,6 +36,7 @@ const User = connection.define('user', {
   name: sequelize.STRING
 });
 */
+/*
 const getDb = require("../util/database").getDb;
 const mongoDb = require("mongodb");
 class User {
@@ -140,3 +164,4 @@ class User {
   }
 }
 module.exports = User;
+*/

@@ -12,12 +12,35 @@ const userSchema = new Schema({
   cart: {
     items: [
       {
-        productId: { type: Schema.Types.ObjectId, required: true },
+        productId: { type: Schema.Types.ObjectId, red: 'Product', required: true },
         quantity: { type: Number, required: true }
       }
     ]
   }
 });
+// add custom method to a schema
+userSchema.methods.addToCart = function(product) {
+  const cartProductIndex = this.cart.items.findIndex(cp => {
+    return product._id.toString() == cp.productId.toString();
+  });
+  let newquantity = 1;
+  let updatedCartItems = [...this.cart.items];
+  if (cartProductIndex >= 0) {
+    newquantity = this.cart.items[cartProductIndex].quantity + 1;
+    updatedCartItems[cartProductIndex].quantity = newquantity;
+  } else {
+    updatedCartItems.push({
+      productId: product._id,
+      quantity: newquantity
+    });
+  }
+  const updatedCart = {
+    items: updatedCartItems
+  };
+  this.cart = updatedCart;
+  return this.save();
+}
+
 
 module.exports = mongoose.model("User", userSchema);
 

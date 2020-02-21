@@ -126,6 +126,8 @@ exports.updateProduct = (req, res, next) => {
 };
 exports.getProducts = (req, res) => {
   Product.find()
+  //.select('title price -_id')-dictate on what fields should be returned
+  //.populate('userId')-tell mongo to return the full user object details not just the id
     .then(products => {
       res.render("admin/products", {
         prods: products,

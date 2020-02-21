@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const Product = require('../models/product');
 const userSchema = new Schema({
   name: {
     type: String,
@@ -40,9 +41,19 @@ userSchema.methods.addToCart = function(product) {
   this.cart = updatedCart;
   return this.save();
 }
+userSchema.methods.deleteCartItem = function(prodId) {
+  const updatedCartItems = this.cart.items.filter(item => {
+    return item.productId.toString() !== prodId;
+  });
+  // update the database
+ this.cart.items = updatedCartItems;
+ return this.save();
+}
+
 
 
 module.exports = mongoose.model("User", userSchema);
+
 
 /*
 const sequelize = require("sequelize");

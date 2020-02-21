@@ -41,7 +41,7 @@ exports.getIndex = (req, res, next) => {
     })
     .catch(err => {
       console.log(err);
-    }); 
+    });
   /*
   Product.fetchAll()
     .then(products => {
@@ -57,14 +57,19 @@ exports.getIndex = (req, res, next) => {
     */
 };
 exports.getCart = (req, res, next) => {
-  // get all cart products
-  req.theuser.getCart().then(products=> {
-    res.render("shop/cart", {
-      path: "cart",
-      products: products,
-      pageTitle: "Cart"
-    });
-  }).catch(err => console.log(err));
+  // now that we have cart details on the user, just use the populate method to populate with product data we use execPopulate() on populate because populate alone does not return a promise
+  req.theuser
+    .populate("cart.items.productId")
+    .execPopulate()
+    .then(user => {
+      const products = user.cart.items;
+      res.render("shop/cart", {
+        path: "cart",
+        products: products,
+        pageTitle: "Cart"
+      });
+    })
+    .catch(err => console.log(err));
 
   /*
   req.user
@@ -130,10 +135,12 @@ exports.postCart = (req, res, next) => {
 };
 exports.deleteCartItem = (req, res, next) => {
   const prodId = req.body.productId;
-  req.theuser.deleteCartItem(prodId).then(result => {
-    res.redirect("/cart");
-
-  }).catch(err => console.log(err));
+  req.theuser
+    .deleteCartItem(prodId)
+    .then(result => {
+      res.redirect("/cart");
+    })
+    .catch(err => console.log(err));
   // get user's cart
   /*
   req.user
@@ -155,15 +162,17 @@ exports.getCheckout = (req, res, next) => {
   res.render("shop/checkout", { path: "checkout", pageTitle: "Checkout" });
 };
 exports.getOrders = (req, res, next) => {
-  req.theuser.getOrders().then(orders => {
-    res.render("shop/orders", {
-      path: "orders",
-      pageTitle: "Orders",
-      orders: orders
-    });
+  req.theuser
+    .getOrders()
+    .then(orders => {
+      res.render("shop/orders", {
+        path: "orders",
+        pageTitle: "Orders",
+        orders: orders
+      });
+    })
+    .catch();
 
-  }).catch()
-  
   /*
   req.user
     .getOrders({ include: ["products"] }) // get orders but include products per order
@@ -179,10 +188,12 @@ exports.getOrders = (req, res, next) => {
 
 // orders
 exports.createOrder = (req, res, next) => {
-  req.theuser.createOrder().then(result => {
-    res.redirect("/orders");
-
-  }).catch(err => console.log(err))
+  req.theuser
+    .createOrder()
+    .then(result => {
+      res.redirect("/orders");
+    })
+    .catch(err => console.log(err));
   /*
   // get all cart items and move them to an order
   let fetchedCart;

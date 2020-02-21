@@ -203,6 +203,10 @@ exports.createOrder = (req, res, next) => {
       return order.save();
     })
     .then(result => {
+      // clear cart
+      return req.theuser.clearCart();
+    })
+    .then(result => {
       res.redirect("/orders");
     })
     .catch(err => console.log(err));

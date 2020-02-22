@@ -8,7 +8,8 @@ exports.addProduct = (req, res) => {
   res.render("admin/edit-product", {
     pageTitle: "Add Product",
     path: "/admin/add-product",
-    editing: false
+    editing: false,
+    isAuthenticated: false
   });
 };
 
@@ -64,7 +65,8 @@ exports.editProduct = (req, res) => {
           pageTitle: "Edit Product",
           path: "/admin/edit-product",
           editing: editMode,
-          product: product
+          product: product,
+          isAuthenticated: false
         });
       } else {
         res.redirect("/");
@@ -126,13 +128,14 @@ exports.updateProduct = (req, res, next) => {
 };
 exports.getProducts = (req, res) => {
   Product.find()
-  //.select('title price -_id')-dictate on what fields should be returned
-  //.populate('userId')-tell mongo to return the full user object details not just the id
+    //.select('title price -_id')-dictate on what fields should be returned
+    //.populate('userId')-tell mongo to return the full user object details not just the id
     .then(products => {
       res.render("admin/products", {
         prods: products,
         path: "/admin/admin-products",
-        pageTitle: "Admin Products"
+        pageTitle: "Admin Products",
+        isAuthenticated: false
       });
     })
     .catch(err => console.log(err));

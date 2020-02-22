@@ -7,7 +7,8 @@ exports.getProducts = (req, res, next) => {
       res.render("shop/product-list", {
         prods: products,
         pageTitle: "Shop",
-        path: "products"
+        path: "products",
+        isAuthenticated: false
       });
     })
     .catch(err => {
@@ -22,7 +23,8 @@ exports.getProduct = (req, res, next) => {
       res.render("shop/product-detail", {
         product: product,
         pageTitle: product.title,
-        path: "products"
+        path: "products",
+        isAuthenticated: false
       });
     })
     .catch(err => {
@@ -36,7 +38,8 @@ exports.getIndex = (req, res, next) => {
       res.render("shop/index", {
         prods: products,
         pageTitle: "Shop",
-        path: "/"
+        path: "/",
+        isAuthenticated: false
       });
     })
     .catch(err => {
@@ -66,7 +69,8 @@ exports.getCart = (req, res, next) => {
       res.render("shop/cart", {
         path: "cart",
         products: products,
-        pageTitle: "Cart"
+        pageTitle: "Cart",
+        isAuthenticated: false
       });
     })
     .catch(err => console.log(err));
@@ -159,15 +163,20 @@ exports.deleteCartItem = (req, res, next) => {
     */
 };
 exports.getCheckout = (req, res, next) => {
-  res.render("shop/checkout", { path: "checkout", pageTitle: "Checkout" });
+  res.render("shop/checkout", {
+    path: "checkout",
+    pageTitle: "Checkout",
+    isAuthenticated: false
+  });
 };
 exports.getOrders = (req, res, next) => {
-  Order.find({'user.userId': req.theuser._id})
+  Order.find({ "user.userId": req.theuser._id })
     .then(orders => {
       res.render("shop/orders", {
         path: "orders",
         pageTitle: "Orders",
-        orders: orders
+        orders: orders,
+        isAuthenticated: false
       });
     })
     .catch();

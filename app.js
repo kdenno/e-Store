@@ -5,6 +5,7 @@ const path = require("path");
 
 const adminData = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
+const authRoutes = require("./routes/auth");
 const NotFoundController = require("./controllers/404controller");
 // const connection = require('./util/database').connect;
  const User = require("./models/user");
@@ -49,6 +50,7 @@ app.use((req, res, next) => {
 // since router object imported to this file is  a valid middleware object therefore we can use .use()
 app.use("/admin", adminData.routes);
 app.use(shopRoutes);
+app.use(authRoutes);
 
 // add middleware for 404
 app.use(NotFoundController.NotFound);
@@ -102,7 +104,7 @@ mongoose
           // create a new user
           const theuser = new User({
             name: "Max",
-            email: "max@test.com",
+            email: "max@test.com", 
             cart: { items: [] }
           });
           theuser.save();

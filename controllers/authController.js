@@ -22,7 +22,11 @@ exports.postLogin = (req, res, next) => {
     .then(user => {
       req.session.isAuthenticated = true;
       req.session.theuser = user; // remember setting the user on the session is sharing the user accross all requests
-      res.redirect("/");
+      req.session.save((err) => {
+        // we can harness the session.save() and give it a callback to call after updating our session to the database to avoid redirecting too soon
+        console.log(err);
+        res.redirect("/");
+      });
     })
     .catch(err => console.log(err));
 };

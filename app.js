@@ -54,7 +54,19 @@ app.use(
   })
 );
 
-
+// create user middleware based of session data if not session data i.e user has logged out, then nothing happens
+app.use((req, res, next) => {
+  if (!req.session.theuser) {
+    return next();
+  }
+  User.findById(req.session.theuser._id)
+    .then(user => {
+      // set mongoose user object to request
+      req.theuser = user;
+      next();
+    })
+    .catch(err => console.log(err));
+});
 
 // since router object imported to this file is  a valid middleware object therefore we can use .use()
 app.use("/admin", adminData.routes);

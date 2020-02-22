@@ -25,7 +25,7 @@ exports.createProduct = (req, res) => {
     price: price,
     description: description,
     imageUrl: imgUrl,
-    userId: req.session.theuser._id
+    userId: req.theuser._id
   });
   // now we'll use the save method but this time its not defined in the product model but its the mongoose save();
   product

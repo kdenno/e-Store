@@ -8,9 +8,10 @@ const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
 const NotFoundController = require("./controllers/404controller");
 // const connection = require('./util/database').connect;
- const User = require("./models/user");
+const User = require("./models/user");
 const mongoose = require("mongoose");
-const session = require('express-session');
+const session = require("express-session");
+const MongoSessionStore = require("connect-mongodb-session")(session);
 /*
 
 // import database
@@ -23,9 +24,15 @@ const Order = require("./models/order");
 const OrderItem = require("./models/order-item");
 
 */
+const MONGODB_URI =
+  "mongodb+srv://node-complete:B6ANyfkEveghapdK@cluster0-k1a0c.mongodb.net/test";
 
 // execute express coz the express package returns a function
 const app = express();
+const sessionStore = new MongoSessionStore({
+  uri: MONGODB_URI,
+  collection: "sessions"
+});
 
 // declare view engine
 app.set("view engine", "ejs");
@@ -38,11 +45,17 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
 // create session middleware
-app.use(session({secret: 'my secret', resave: false, saveUninitialized: false}));
+app.use(
+  session({
+    secret: "my secret",
+    resave: false,
+    saveUninitialized: false,
+    store: sessionStore
+  })
+);
 
 // create middleware for user
 app.use((req, res, next) => {
-  
   User.findById("5e4fc09d7f3ac60327e0d300")
     .then(user => {
       req.theuser = user;
@@ -98,9 +111,7 @@ database
   */
 // connnect with mongoose
 mongoose
-  .connect(
-    "mongodb+srv://node-complete:B6ANyfkEveghapdK@cluster0-k1a0c.mongodb.net/test?retryWrites=Shop&w=majority"
-  )
+  .connect(MONGODB_URI)
   .then(result => {
     User.findOne()
       .then(user => {
@@ -108,7 +119,7 @@ mongoose
           // create a new user
           const theuser = new User({
             name: "Max",
-            email: "max@test.com", 
+            email: "max@test.com",
             cart: { items: [] }
           });
           theuser.save();

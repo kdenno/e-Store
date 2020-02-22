@@ -9,7 +9,7 @@ exports.addProduct = (req, res) => {
     pageTitle: "Add Product",
     path: "/admin/add-product",
     editing: false,
-    isAuthenticated: false
+    isAuthenticated: req.session.isAuthenticated
   });
 };
 
@@ -25,7 +25,7 @@ exports.createProduct = (req, res) => {
     price: price,
     description: description,
     imageUrl: imgUrl,
-    userId: req.theuser._id
+    userId: req.session.theuser._id
   });
   // now we'll use the save method but this time its not defined in the product model but its the mongoose save();
   product
@@ -66,7 +66,7 @@ exports.editProduct = (req, res) => {
           path: "/admin/edit-product",
           editing: editMode,
           product: product,
-          isAuthenticated: false
+          isAuthenticated: req.session.isAuthenticated
         });
       } else {
         res.redirect("/");
@@ -135,7 +135,7 @@ exports.getProducts = (req, res) => {
         prods: products,
         path: "/admin/admin-products",
         pageTitle: "Admin Products",
-        isAuthenticated: false
+        isAuthenticated: req.session.isAuthenticated
       });
     })
     .catch(err => console.log(err));

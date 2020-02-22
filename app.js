@@ -54,15 +54,7 @@ app.use(
   })
 );
 
-// create middleware for user
-app.use((req, res, next) => {
-  User.findById("5e4fc09d7f3ac60327e0d300")
-    .then(user => {
-      req.theuser = user;
-      next();
-    })
-    .catch(err => console.log(err));
-});
+
 
 // since router object imported to this file is  a valid middleware object therefore we can use .use()
 app.use("/admin", adminData.routes);

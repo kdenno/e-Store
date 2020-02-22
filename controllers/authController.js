@@ -1,15 +1,15 @@
 const express = require("express");
+const User = require("../models/user");
 exports.getLogin = (req, res, next) => {
   // const loggedIn = req
   //   .get("Cookie")
   //   .split(";")[1]
   //   .trim()
   //   .split("=")[1];
-  console.log(req.session.isAuthenticated);
-  res.render("auth/login", { 
+  res.render("auth/login", {
     pageTitle: "Login",
     path: "/login",
-    isAuthenticated: true
+    isAuthenticated: false
   });
 };
 
@@ -17,6 +17,19 @@ exports.postLogin = (req, res, next) => {
   // process login and return cookie to user
   // res.setHeader("Set-Cookie", "loggedIn = true");
   // note the express-session package adds the session object to every request so we can use that object and add custom properites
-  req.session.isAuthenticated = true;
-  res.redirect("/");
+  // create middleware for user
+  User.findById("5e4fc09d7f3ac60327e0d300")
+    .then(user => {
+      req.session.isAuthenticated = true;
+      req.session.theuser = user; // remember setting the user on the session is sharing the user accross all requests
+      res.redirect("/");
+    })
+    .catch(err => console.log(err));
+};
+
+exports.postLogout = (req, res, next) => {
+  req.session.destroy(err => {
+    console.log(err);
+    res.redirect("/");
+  });
 };

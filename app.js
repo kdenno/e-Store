@@ -13,6 +13,7 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoSessionStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
+const flash = require('connect-flash');
 /*
 
 // import database
@@ -60,6 +61,7 @@ app.use(
 
 // csrf depends of sessions, need to use it after creating a session
 app.use(csrfProtection);
+app.use(flash());
 
 // create user middleware based of session data if not session data i.e user has logged out, then nothing happens
 app.use((req, res, next) => {

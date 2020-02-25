@@ -1,5 +1,7 @@
 const express = require("express");
 const User = require("../models/user");
+const bcrypt = require("bcryptjs");
+
 exports.getLogin = (req, res, next) => {
   // const loggedIn = req
   //   .get("Cookie")
@@ -47,10 +49,14 @@ exports.postSignup = (req, res, next) => {
         // user exists
         return res.redirect("/signup");
       }
+      // encrypt password
+      return bcrypt.hash(password, 12);
+    })
+    .then(hashedpassword => {
       // create user
       const user = new User({
         email: email,
-        password: password,
+        password: hashedpassword,
         card: { item: [] }
       });
       return user.save();

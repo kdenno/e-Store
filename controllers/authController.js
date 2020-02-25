@@ -1,7 +1,15 @@
 const express = require("express");
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
+const nodemailer = require("nodemailer");
+const sendgridTransport = require("nodemailer-sendgrid-transport");
 
+const transporter = nodemailer.createTransport({
+  auth: {
+    api_key:
+      "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"
+  }
+});
 exports.getLogin = (req, res, next) => {
   // const loggedIn = req
   //   .get("Cookie")
@@ -94,6 +102,15 @@ exports.postSignup = (req, res, next) => {
         })
         .then(result => {
           res.redirect("/login");
+          // send email
+          return transporter.sendMail({
+            to: email,
+            from: "support@ncarrierug.com",
+            html: "<h1>SignUp is Successful"
+          });
+        })
+        .catch(err => {
+          console.log(err);
         });
     })
 

@@ -27,15 +27,30 @@ exports.postLogin = (req, res, next) => {
   // res.setHeader("Set-Cookie", "loggedIn = true");
   // note the express-session package adds the session object to every request so we can use that object and add custom properites
   // create middleware for user
-  User.findById("5e4fc09d7f3ac60327e0d300")
+  const email = req.body.email;
+  const password = req.body.password;
+
+  User.findOne({ email: email })
     .then(user => {
-      req.session.isAuthenticated = true;
-      req.session.theuser = user; // remember setting the user on the session is sharing the user accross all requests
-      req.session.save(err => {
-        // we can harness the session.save() and give it a callback to call after updating our session to the database to avoid redirecting too soon
-        console.log(err);
-        res.redirect("/");
-      });
+      if (!user) {
+        return res.redirect("/login");
+      }
+      // compare passwords
+      bcrypt
+        .compare(password, user.password)
+        .then(doMatch => {
+          if (doMatch) {
+            req.session.isAuthenticated = true;
+            req.session.theuser = user; // remember setting the user on the session is sharing the user accross all requests
+            return req.session.save(err => {
+              // we can harness the session.save() and give it a callback to call after updating our session to the database to avoid redirecting too soon
+              console.log(err);
+              res.redirect("/");
+            });
+          }
+          res.redirect("/login");
+        })
+        .catch(err => {});
     })
     .catch(err => console.log(err));
 };
@@ -50,20 +65,22 @@ exports.postSignup = (req, res, next) => {
         return res.redirect("/signup");
       }
       // encrypt password
-      return bcrypt.hash(password, 12);
+      return bcrypt
+        .hash(password, 12)
+        .then(hashedpassword => {
+          // create user
+          const user = new User({
+            email: email,
+            password: hashedpassword,
+            card: { item: [] }
+          });
+          return user.save();
+        })
+        .then(result => {
+          res.redirect("/login");
+        });
     })
-    .then(hashedpassword => {
-      // create user
-      const user = new User({
-        email: email,
-        password: hashedpassword,
-        card: { item: [] }
-      });
-      return user.save();
-    })
-    .then(result => {
-      res.redirect("/login");
-    })
+
     .catch(err => {
       console.log(err);
     });

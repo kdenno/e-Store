@@ -7,8 +7,7 @@ exports.getProducts = (req, res, next) => {
       res.render("shop/product-list", {
         prods: products,
         pageTitle: "Shop",
-        path: "products",
-        isAuthenticated: req.session.isAuthenticated
+        path: "products"
       });
     })
     .catch(err => {
@@ -205,7 +204,7 @@ exports.createOrder = (req, res, next) => {
       });
       const order = new Order({
         products: products,
-        name: req.theuser.name,
+        email: req.theuser.email,
         userId: req.theuser._id
       });
       return order.save();

@@ -28,6 +28,8 @@
             </div>
 
                     <% if(!editing) { %>  <%}else{ %> <input type="hidden" name="prodId" value="<%=product._id %>"><%} %>
+                    <input type="hidden" name="_csrf" value="<%=csrfToken%>">
+
             <button class="btn" type="submit">
                 <% if(!editing) { %> Add Product <%}else{ %> Update Product <%} %>
             </button>

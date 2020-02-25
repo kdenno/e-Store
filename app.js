@@ -12,6 +12,7 @@ const User = require("./models/user");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoSessionStore = require("connect-mongodb-session")(session);
+const csrf = require("csurf");
 /*
 
 // import database
@@ -24,6 +25,9 @@ const Order = require("./models/order");
 const OrderItem = require("./models/order-item");
 
 */
+// init csrf protection
+const csrfProtection = csrf();
+
 const MONGODB_URI =
   "mongodb+srv://node-complete:B6ANyfkEveghapdK@cluster0-k1a0c.mongodb.net/test";
 
@@ -54,6 +58,9 @@ app.use(
   })
 );
 
+// csrf depends of sessions, need to use it after creating a session
+app.use(csrfProtection);
+
 // create user middleware based of session data if not session data i.e user has logged out, then nothing happens
 app.use((req, res, next) => {
   if (!req.session.theuser) {
@@ -66,6 +73,13 @@ app.use((req, res, next) => {
       next();
     })
     .catch(err => console.log(err));
+});
+
+// create middleware to send local variables to all responses
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isAuthenticated;
+  res.locals.csrfToken = req.csrfToken();
+  next();
 });
 
 // since router object imported to this file is  a valid middleware object therefore we can use .use()

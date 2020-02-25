@@ -13,9 +13,9 @@ exports.getLogin = (req, res, next) => {
   });
 };
 exports.getSignup = (req, res, next) => {
-  res.render('auth/signup', {
-    path: '/signup',
-    pageTitle: 'Signup',
+  res.render("auth/signup", {
+    path: "/signup",
+    pageTitle: "Signup",
     isAuthenticated: false
   });
 };
@@ -29,7 +29,7 @@ exports.postLogin = (req, res, next) => {
     .then(user => {
       req.session.isAuthenticated = true;
       req.session.theuser = user; // remember setting the user on the session is sharing the user accross all requests
-      req.session.save((err) => {
+      req.session.save(err => {
         // we can harness the session.save() and give it a callback to call after updating our session to the database to avoid redirecting too soon
         console.log(err);
         res.redirect("/");
@@ -37,7 +37,31 @@ exports.postLogin = (req, res, next) => {
     })
     .catch(err => console.log(err));
 };
-exports.postSignup = (req, res, next) => {};
+exports.postSignup = (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const confirmPassword = req.body.confirmPassword;
+  User.findOne({ email: email })
+    .then(result => {
+      if (result) {
+        // user exists
+        return res.redirect("/signup");
+      }
+      // create user
+      const user = new User({
+        email: email,
+        password: password,
+        card: { item: [] }
+      });
+      return user.save();
+    })
+    .then(result => {
+      res.redirect("/login");
+    })
+    .catch(err => {
+      console.log(err);
+    });
+};
 
 exports.postLogout = (req, res, next) => {
   req.session.destroy(err => {

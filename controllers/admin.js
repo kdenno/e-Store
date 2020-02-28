@@ -110,22 +110,25 @@ exports.updateProduct = (req, res, next) => {
   // );
   const product = Product.findById(productId)
     .then(product => {
+      if (product.userId.toString() !== req.theuser._id.toString()) {
+        return res.redirect("/login");
+      }
       // got back a full mongoose object, go ahead and update the fields
       product.title = updatedTitle;
       product.imageUrl = updatedImageUrl;
       product.price = updatedPrice;
       product.description = updatedDesc;
       // save product
-      return product.save();
-    })
-    .then(result => {
-      res.redirect("/admin/products");
+      return product.save().then(result => {
+        res.redirect("/admin/products");
+      });
     })
 
     .catch(err => console.log(err));
 };
 exports.getProducts = (req, res) => {
-  Product.find()
+  // get products for that logged in user
+  Product.find({ userId: req.theuser._id })
     //.select('title price -_id')-dictate on what fields should be returned
     //.populate('userId')-tell mongo to return the full user object details not just the id
     .then(products => {
@@ -165,7 +168,7 @@ exports.getProducts = (req, res) => {
 
 exports.deleteProduct = (req, res, next) => {
   const productId = req.body.productId;
-  Product.findByIdAndRemove(productId)
+  Product.deleteOne({_id: productId, userId: req.theuser._id})
     .then(() => {
       res.redirect("/admin/products");
     })

@@ -53,7 +53,13 @@ exports.createProduct = (req, res) => {
     .then(result => {
       res.redirect("/");
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      // res.redirect("/500");
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      // bubble up error to express. calling next('argument') with an argument will always trigger the global error handler
+      return next(error);
+    });
 
   /*
   req.user
@@ -94,7 +100,11 @@ exports.editProduct = (req, res) => {
         res.redirect("/");
       }
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
   /*
   req.user
     .getProducts({ where: { id: prodId } })
@@ -137,7 +147,8 @@ exports.updateProduct = (req, res, next) => {
         title: updatedTitle,
         imageUrl: updatedImageUrl,
         price: updatedPrice,
-        description: updatedDesc
+        description: updatedDesc,
+        _id: productId
       },
       validationErrors: errors.array()
     });
@@ -165,7 +176,11 @@ exports.updateProduct = (req, res, next) => {
       });
     })
 
-    .catch(err => console.log(err));
+    .catch(err => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 exports.getProducts = (req, res) => {
   // get products for that logged in user
@@ -179,7 +194,11 @@ exports.getProducts = (req, res) => {
         pageTitle: "Admin Products"
       });
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 
   /*
   // using mongoDB
@@ -214,7 +233,9 @@ exports.deleteProduct = (req, res, next) => {
       res.redirect("/admin/products");
     })
     .catch(err => {
-      console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
   /*
   Product.deleteById(productId)

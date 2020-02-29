@@ -11,7 +11,9 @@ exports.getProducts = (req, res, next) => {
       });
     })
     .catch(err => {
-      console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -26,7 +28,9 @@ exports.getProduct = (req, res, next) => {
       });
     })
     .catch(err => {
-      console.log("err");
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -40,7 +44,9 @@ exports.getIndex = (req, res, next) => {
       });
     })
     .catch(err => {
-      console.log(err);
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
   /*
   Product.fetchAll()
@@ -69,7 +75,11 @@ exports.getCart = (req, res, next) => {
         pageTitle: "Cart"
       });
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 
   /*
   req.user
@@ -97,7 +107,11 @@ exports.postCart = (req, res, next) => {
     .then(result => {
       res.redirect("/cart");
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
   /*
   let fetchedCart;
   let newquantity = 1;
@@ -140,7 +154,11 @@ exports.deleteCartItem = (req, res, next) => {
     .then(result => {
       res.redirect("/cart");
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
   // get user's cart
   /*
   req.user
@@ -211,7 +229,11 @@ exports.createOrder = (req, res, next) => {
     .then(result => {
       res.redirect("/orders");
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
   /*
   // get all cart items and move them to an order
   let fetchedCart;

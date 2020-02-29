@@ -13,7 +13,7 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoSessionStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
-const flash = require('connect-flash');
+const flash = require("connect-flash");
 /*
 
 // import database
@@ -70,11 +70,17 @@ app.use((req, res, next) => {
   }
   User.findById(req.session.theuser._id)
     .then(user => {
+      if (!user) {
+        return next();
+      }
       // set mongoose user object to request
       req.theuser = user;
       next();
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      // throw new Error(err); throwing insinde callbacks and promises doesnt work we have to use next it only works when done outside
+      next(new Error(err)); 
+    });
 });
 
 // create middleware to send local variables to all responses
@@ -89,8 +95,16 @@ app.use("/admin", adminData.routes);
 app.use(shopRoutes);
 app.use(authRoutes);
 
+// add route for 500
+app.get("/500", NotFoundController.ErrorOccured);
+
 // add middleware for 404
 app.use(NotFoundController.NotFound);
+
+// create global error handler
+app.use((error, req, res, next) => {
+  res.redirect("/500");
+});
 
 /*
 // create relations

@@ -7,6 +7,11 @@
    <%- include('../partials/navigation.ejs') %>
 
     <main>
+        <% if(errorMessage) { %>
+            <div><%errorMessage%></div>
+
+
+        <%}%>
         <form class="product-form" action="/admin/<% if(!editing) { %>add-product<%}else{ %>update-product<%} %>" method="POST">
             <div class="form-control">
                 <label for="title">Title</label>

@@ -5,7 +5,23 @@ const authController = require("../controllers/authController");
 const User = require("../models/user");
 router.get("/login", authController.getLogin);
 router.get("/signup", authController.getSignup);
-router.post("/login", authController.postLogin);
+router.post(
+  "/login",
+  [
+    check("email")
+      .isEmail()
+      .withMessage("Please Enter a Valid Email")
+      .normalizeEmail(),
+      body(
+        "password",
+        "Please enter a value with only numbers and text and atleast 5 characters"
+      )
+        .isLength({ min: 5 })
+        .trim()
+        .isAlphanumeric(),
+  ],
+  authController.postLogin
+);
 router.post("/logout", authController.postLogout);
 router.post(
   "/signup",

@@ -1,6 +1,7 @@
 // controls the products logic
 const Product = require("../models/product");
 const mongoDb = require("mongodb");
+const { validationResult } = require("express-validator/check");
 // const Cart = require("../models/cart");
 
 exports.addProduct = (req, res) => {
@@ -8,7 +9,9 @@ exports.addProduct = (req, res) => {
   res.render("admin/edit-product", {
     pageTitle: "Add Product",
     path: "/admin/add-product",
-    editing: false
+    editing: false,
+    hasError: false,
+    errorMessage: null
   });
 };
 
@@ -19,6 +22,22 @@ exports.createProduct = (req, res) => {
   const description = req.body.description;
   // const userid = req.theuser._id;
   // const product = new Product(title,price,description,imgUrl,null,userid);
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).render("admin/edit-product", {
+      pageTitle: "Add Product",
+      path: "/admin/edit-product",
+      editing: false,
+      hasError: true,
+      errorMessage: errors.array[0].msg,
+      product: {
+        title: title,
+        imageUrl: imgUrl,
+        price: price,
+        description: description
+      }
+    });
+  }
   const product = new Product({
     title: title,
     price: price,
@@ -64,6 +83,8 @@ exports.editProduct = (req, res) => {
           pageTitle: "Edit Product",
           path: "/admin/edit-product",
           editing: editMode,
+          hasError: false,
+          errorMessage: null,
           product: product
         });
       } else {
@@ -168,7 +189,7 @@ exports.getProducts = (req, res) => {
 
 exports.deleteProduct = (req, res, next) => {
   const productId = req.body.productId;
-  Product.deleteOne({_id: productId, userId: req.theuser._id})
+  Product.deleteOne({ _id: productId, userId: req.theuser._id })
     .then(() => {
       res.redirect("/admin/products");
     })

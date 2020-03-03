@@ -272,20 +272,39 @@ exports.createOrder = (req, res, next) => {
      */
   exports.getInvoice = (req, res, next) => {
     orderId = req.params.orderId;
-    const InvoiceName = "invoice-" + orderId + ".pdf";
-    const invoicePath = path.join("data", "invoices", InvoiceName);
-    fs.readFile(invoicePath, (err, data) => {
-      if (err) {
-        return next();
-      }
-      // set some instructions for the browser
-      res.setHeader("Content-Type", "application/pdf");
-      // res.setHeader('Content-Disposition', 'inline; filename="'+InvoiceName+' "'); // pdf opens in the same tab in the browser
-      res.setHeader(
-        "Content-Disposition",
-        'attachment; filename="' + InvoiceName + ' "'
-      ); // pdf is automatically downloaded
-      res.send(data);
-    });
+    Order.findById()
+      .then(order => {
+        if (!order) {
+          return next(new Error("Order not found"));
+        }
+        if (order.user.userId.toString() !== req.theuser._id.toString()) {
+          return next(new Error("UnAuthorized"));
+        }
+        const InvoiceName = "invoice-" + orderId + ".pdf";
+        const invoicePath = path.join("data", "invoices", InvoiceName);
+        /*
+        fs.readFile(invoicePath, (err, data) => {
+          if (err) {
+            return next();
+          }
+          // set some instructions for the browser
+          res.setHeader("Content-Type", "application/pdf");
+          // res.setHeader('Content-Disposition', 'inline; filename="'+InvoiceName+' "'); // pdf opens in the same tab in the browser
+          res.setHeader(
+            "Content-Disposition",
+            'attachment; filename="' + InvoiceName + ' "'
+          ); // pdf is automatically downloaded
+          res.send(data);
+        });
+        */
+        const file = fs.createReadStream(invoicePath);
+        res.setHeader(
+          "Content-Disposition",
+          'attachment; filename="' + InvoiceName + ' "'
+        ); // pdf is automatically downloaded
+        // pipe input to output stream
+        file.pipe(res);
+      })
+      .catch(err => next(err));
   };
 };

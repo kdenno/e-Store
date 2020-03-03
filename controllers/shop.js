@@ -1,5 +1,7 @@
 const Product = require("../models/product");
 const Order = require("../models/order");
+const fs = require("fs");
+const path = require("path");
 
 exports.getProducts = (req, res, next) => {
   Product.find()
@@ -268,4 +270,22 @@ exports.createOrder = (req, res, next) => {
     })
     .catch(err => console.log(err));
      */
+  exports.getInvoice = (req, res, next) => {
+    orderId = req.params.orderId;
+    const InvoiceName = "invoice-" + orderId + ".pdf";
+    const invoicePath = path.join("data", "invoices", InvoiceName);
+    fs.readFile(invoicePath, (err, data) => {
+      if (err) {
+        return next();
+      }
+      // set some instructions for the browser
+      res.setHeader("Content-Type", "application/pdf");
+      // res.setHeader('Content-Disposition', 'inline; filename="'+InvoiceName+' "'); // pdf opens in the same tab in the browser
+      res.setHeader(
+        "Content-Disposition",
+        'attachment; filename="' + InvoiceName + ' "'
+      ); // pdf is automatically downloaded
+      res.send(data);
+    });
+  };
 };

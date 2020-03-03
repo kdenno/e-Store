@@ -2,6 +2,7 @@
 const Product = require("../models/product");
 const mongoDb = require("mongodb");
 const { validationResult } = require("express-validator/check");
+const fileHelper = require("../util/file");
 // const Cart = require("../models/cart");
 
 exports.addProduct = (req, res) => {
@@ -184,6 +185,9 @@ exports.updateProduct = (req, res, next) => {
       // got back a full mongoose object, go ahead and update the fields
       product.title = updatedTitle;
       if (image) {
+        // delete old image
+        fileHelper.deleteFile(product.imageUrl);
+        // update with new image
         product.imageUrl = image.path;
       }
       product.price = updatedPrice;
@@ -246,9 +250,19 @@ exports.getProducts = (req, res) => {
 
 exports.deleteProduct = (req, res, next) => {
   const productId = req.body.productId;
-  Product.deleteOne({ _id: productId, userId: req.theuser._id })
-    .then(() => {
-      res.redirect("/admin/products");
+  return Product.findById()
+    .then(prod => {
+      if (!prod) {
+        return next(new Error("Product doesnt exist"));
+      }
+      // delete product image
+      fileHelper.deleteFile(prod.imageUrl);
+      return Product.deleteOne({
+        _id: productId,
+        userId: req.theuser._id
+      }).then(() => {
+        res.redirect("/admin/products");
+      });
     })
     .catch(err => {
       const error = new Error(err);

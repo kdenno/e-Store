@@ -2,6 +2,7 @@ const Product = require("../models/product");
 const Order = require("../models/order");
 const fs = require("fs");
 const path = require("path");
+const pdfkit = require("pdfkit");
 
 exports.getProducts = (req, res, next) => {
   Product.find()
@@ -282,6 +283,39 @@ exports.createOrder = (req, res, next) => {
         }
         const InvoiceName = "invoice-" + orderId + ".pdf";
         const invoicePath = path.join("data", "invoices", InvoiceName);
+        const pdfDoc = new pdfkit();
+        res.setHeader(
+          "Content-Disposition",
+          'attachment; filename="' + InvoiceName + ' "'
+        ); // pdf is automatically downloaded
+        // pdfDoc is a readable stream therefore pipe it into a writable stream to be written on i.e we want to store the same file on the server side
+        pdfDoc.pipe(fs.createWriteStream(invoicePath));
+        // write it to the client
+        pdfDoc.pipe(res);
+        // now here we are both going to write to the file as we are streaming to the client directly
+        pdfDoc.fontSize(30).text("Invoice", {
+          underline: true
+        });
+        pdfDoc.text("---------------------------------");
+        let totalPrice = 0;
+        order.products.forEach(prod => {
+          totalPrice += prod.quantity * prod.product.price;
+          pdfDoc
+            .fontSize(14)
+            .text(
+              prod.product.title +
+                "-" +
+                prod.quantity +
+                " x " +
+                "$" +
+                prod.product.price
+            );
+        });
+        pdfDoc.text("---------------------------------");
+
+        pdfDoc.text("Total Price " + totalPrice);
+        // indicate end
+        pdfDoc.end();
         /*
         fs.readFile(invoicePath, (err, data) => {
           if (err) {
@@ -297,13 +331,9 @@ exports.createOrder = (req, res, next) => {
           res.send(data);
         });
         */
-        const file = fs.createReadStream(invoicePath);
-        res.setHeader(
-          "Content-Disposition",
-          'attachment; filename="' + InvoiceName + ' "'
-        ); // pdf is automatically downloaded
-        // pipe input to output stream
-        file.pipe(res);
+        // const file = fs.createReadStream(invoicePath);
+
+        // file.pipe(res);
       })
       .catch(err => next(err));
   };

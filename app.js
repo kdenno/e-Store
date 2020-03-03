@@ -14,6 +14,7 @@ const session = require("express-session");
 const MongoSessionStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const flash = require("connect-flash");
+const multer = require("multer");
 /*
 
 // import database
@@ -38,6 +39,26 @@ const sessionStore = new MongoSessionStore({
   uri: MONGODB_URI,
   collection: "sessions"
 });
+const fileStorege = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images");
+  },
+  filename: (req, file, cb) => {
+    cb(null, new Date().toISOString() + "-" + file.originalname);
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimeType === "image/png" ||
+    file.mimeType === "image/jpg" ||
+    file.mimeType === "image/jpeg"
+  ) {
+    cb(null, true); // accept file
+  } else {
+    cb(null, false); // reject file
+  }
+};
 
 // declare view engine
 app.set("view engine", "ejs");
@@ -46,8 +67,14 @@ app.set("views", "views");
 
 // by default, response from express is not parsed so use middleware and parse all responses
 app.use(bodyParser.urlencoded({ extended: false }));
+// now body parse only purses text we need multer to work on images
+app.use(
+  multer({ storage: fileStorege, fileFilter: fileFilter }).single("image")
+); // 'image' is the field name thats containing the image data in the incoming form
+
 // allow access to static files
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 // create session middleware
 app.use(
@@ -59,7 +86,7 @@ app.use(
   })
 );
 
-// csrf depends of sessions, need to use it after creating a session
+// csrf depends on sessions, need to use it after creating a session
 app.use(csrfProtection);
 app.use(flash());
 
@@ -79,7 +106,7 @@ app.use((req, res, next) => {
     })
     .catch(err => {
       // throw new Error(err); throwing insinde callbacks and promises doesnt work we have to use next it only works when done outside
-      next(new Error(err)); 
+      next(new Error(err));
     });
 });
 

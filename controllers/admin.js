@@ -18,9 +18,24 @@ exports.addProduct = (req, res) => {
 
 exports.createProduct = (req, res) => {
   const title = req.body.title;
-  const imgUrl = req.body.imageUrl;
+  const image = req.file;
   const price = req.body.price;
   const description = req.body.description;
+  if (!image) {
+    return res.status(422).render("admin/edit-product", {
+      pageTitle: "Add Product",
+      path: "/admin/edit-product",
+      editing: false,
+      hasError: true,
+      errorMessage: "Attached file is not an image",
+      product: {
+        title: title,
+        price: price,
+        description: description
+      },
+      validationErrors: []
+    });
+  }
   // const userid = req.theuser._id;
   // const product = new Product(title,price,description,imgUrl,null,userid);
   const errors = validationResult(req);
@@ -40,6 +55,8 @@ exports.createProduct = (req, res) => {
       validationErrors: errors.array()
     });
   }
+  // construct image path
+  const imgUrl = image.path;
   const product = new Product({
     title: title,
     price: price,
@@ -132,7 +149,7 @@ exports.editProduct = (req, res) => {
 exports.updateProduct = (req, res, next) => {
   const productId = req.body.prodId;
   const updatedTitle = req.body.title;
-  const updatedImageUrl = req.body.imageUrl;
+  const image = req.image;
   const updatedPrice = req.body.price;
   const updatedDesc = req.body.description;
   const errors = validationResult(req);
@@ -145,7 +162,6 @@ exports.updateProduct = (req, res, next) => {
       errorMessage: errors.array[0].msg,
       product: {
         title: updatedTitle,
-        imageUrl: updatedImageUrl,
         price: updatedPrice,
         description: updatedDesc,
         _id: productId
@@ -167,7 +183,9 @@ exports.updateProduct = (req, res, next) => {
       }
       // got back a full mongoose object, go ahead and update the fields
       product.title = updatedTitle;
-      product.imageUrl = updatedImageUrl;
+      if (image) {
+        product.imageUrl = image.path;
+      }
       product.price = updatedPrice;
       product.description = updatedDesc;
       // save product

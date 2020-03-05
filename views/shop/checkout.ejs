@@ -6,4 +6,23 @@
 
 <body>
 <%- include('../partials/navigation.ejs') %>
-<%- include('../partials/foot.ejs') %>
+<main style="width: 1000px; margin: 0 auto;">
+    <% if(products.length > 0) {
+        products.forEach(product =>{ %>
+            <ul class="centered">
+            <li><%= product.productId.title %> (<%=product.quantity%>)
+            </li>
+            </ul>
+            <hr>
+            
+        <%})%>
+        <div class="centered">
+           Total: <%=total%>
+            </div>
+
+   <% }else{%>
+        <h1>No Products in Cart</h1>
+
+   <% }%>
+</main>
+<%- include('../partials/foot.ejs') %> 

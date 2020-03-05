@@ -211,10 +211,27 @@ exports.deleteCartItem = (req, res, next) => {
     */
 };
 exports.getCheckout = (req, res, next) => {
-  res.render("shop/checkout", {
-    path: "checkout",
-    pageTitle: "Checkout"
-  });
+  req.theuser
+    .populate("cart.items.productId")
+    .execPopulate()
+    .then(user => {
+      const products = user.cart.items;
+      let total = 0;
+      products.forEach(product => {
+        total += product.quantity * product.productId.price;
+      });
+      res.render("shop/checkout", {
+        path: "checkout",
+        products: products,
+        pageTitle: "Checkout",
+        total: total
+      });
+    })
+    .catch(err => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 exports.getOrders = (req, res, next) => {
   Order.find({ "user.userId": req.theuser._id })

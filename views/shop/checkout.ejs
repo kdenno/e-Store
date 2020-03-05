@@ -19,6 +19,19 @@
         <div class="centered">
            Total: <%=total%>
             </div>
+            <div class="centered">
+                <script src="https://js.stripe.com/v3/"></script>
+                <button id="order-btn" class="btn">ORDER NOW</button>
+                <script>
+                    var stripe = new Stripe('pk_test_fZfZYuoT6d9XutUqWTSdkE2c00rP1EXksw');
+                    var orderBtn = document.getElementById('order-btn')
+                    orderBtn.addEventListener('click', function(){
+                        stripe.redirectToCheckout({
+                            sessionId: '<%sessionId%>'
+                        })
+                    });
+                </script>
+            </div>
 
    <% }else{%>
         <h1>No Products in Cart</h1>

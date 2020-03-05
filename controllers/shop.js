@@ -4,6 +4,7 @@ const fs = require("fs");
 const path = require("path");
 const pdfkit = require("pdfkit");
 const ITEMS_PER_PAGE = 2;
+const stripe = require("stripe")("sk_test_2oikkdY7unFJu53kusbOgX0700tN4PF9Xv");
 
 exports.getProducts = (req, res, next) => {
   const page = +req.query.page || 1;
@@ -211,20 +212,39 @@ exports.deleteCartItem = (req, res, next) => {
     */
 };
 exports.getCheckout = (req, res, next) => {
+  let total = 0;
+  let products;
   req.theuser
     .populate("cart.items.productId")
     .execPopulate()
     .then(user => {
-      const products = user.cart.items;
-      let total = 0;
+      products = user.cart.items;
       products.forEach(product => {
         total += product.quantity * product.productId.price;
       });
+      // stripe expects certain fields so we need to alter our product and return a totally different object. we multiply product price with 100 to turn it into cents
+      return stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: products.map(p => {
+          return {
+            name: p.productId.title,
+            description: p.productId.description,
+            amount: p.productId.price * 100,
+            currency: "usd",
+            quantity: p.quantity
+          };
+        }),
+        success_url: req.protocal + "//" + req.get("host") + "/checkout/success",
+        cancel_url: req.protocal + "//" + req.get("host") + "/checkout/cancel"
+      });
+    })
+    .then(stripeSession => {
       res.render("shop/checkout", {
         path: "checkout",
         products: products,
         pageTitle: "Checkout",
-        total: total
+        total: total,
+        sessionId: stripeSession.id
       });
     })
     .catch(err => {
@@ -257,6 +277,34 @@ exports.getOrders = (req, res, next) => {
     .catch(err => console.log(err)); */
 };
 
+exports.getCheckoutSuccess = (req, res, next) => {
+  req.theuser
+    .populate("cart.items.productId")
+    .execPopulate()
+    .then(user => {
+      const products = user.cart.items.map(i => {
+        return { product: { ...i.productId._doc }, quantity: i.quantity }; // productId has alot of meta data so use ._doc to get exact data we want
+      });
+      const order = new Order({
+        products: products,
+        email: req.theuser.email,
+        userId: req.theuser._id
+      });
+      return order.save();
+    })
+    .then(result => {
+      // clear cart
+      return req.theuser.clearCart();
+    })
+    .then(result => {
+      res.redirect("/orders");
+    })
+    .catch(err => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
+}
 // orders
 exports.createOrder = (req, res, next) => {
   req.theuser
@@ -285,6 +333,7 @@ exports.createOrder = (req, res, next) => {
       error.httpStatusCode = 500;
       return next(error);
     });
+  
   /*
   // get all cart items and move them to an order
   let fetchedCart;
@@ -319,6 +368,7 @@ exports.createOrder = (req, res, next) => {
     })
     .catch(err => console.log(err));
      */
+  }
   exports.getInvoice = (req, res, next) => {
     orderId = req.params.orderId;
     Order.findById()
@@ -385,4 +435,4 @@ exports.createOrder = (req, res, next) => {
       })
       .catch(err => next(err));
   };
-};
+

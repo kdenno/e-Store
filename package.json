@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+    "start": "MONGO_USER=node-complete MONGO_PASSWORD=B6ANyfkEveghapdK@cluster0-k1a0c MONGO_DEFAULT_DATABASE=test STRIPE_KEY=sk_test_2oikkdY7unFJu53kusbOgX0700tN4PF9Xv node app.js",
+    "start:dev": "nodemon app.js"
   },
   "repository": {
     "type": "git",
@@ -38,6 +39,7 @@
     "nodemailer-sendgrid-transport": "^0.2.0",
     "pdfkit": "^0.11.0",
     "sequelize": "^5.21.4",
+    "socket.io": "^2.3.0",
     "stripe": "^8.28.0"
   }
 }

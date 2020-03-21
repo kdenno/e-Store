@@ -32,8 +32,7 @@ const OrderItem = require("./models/order-item");
 // init csrf protection
 const csrfProtection = csrf();
 
-const MONGODB_URI =
-  "mongodb+srv://node-complete:B6ANyfkEveghapdK@cluster0-k1a0c.mongodb.net/test";
+const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}.mongodb.net/${process.env.MONGO_DEFAULT_DATABASE}`;
 
 // execute express coz the express package returns a function
 const app = express();
@@ -177,7 +176,10 @@ database
 mongoose
   .connect(MONGODB_URI)
   .then(result => {
-    app.listen(8000);
+    app.listen(process.env.PORT || 8000);
+   // const server = app.listen(process.env.PORT || 8000);
+    // const io = require("socket.io")(server);
+    // io.on("connection", socket => {});
   })
   .catch(err => {
     console.log(err);

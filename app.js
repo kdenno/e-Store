@@ -18,6 +18,7 @@ const csrf = require("csurf");
 const flash = require("connect-flash");
 const multer = require("multer");
 const helmet = require("helmet");
+const compression = require("compression");
 /*
 
 // import database
@@ -78,6 +79,7 @@ app.use(
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/images", express.static(path.join(__dirname, "images")));
 app.use(helmet());
+app.use(compression());
 
 // create session middleware
 app.use(

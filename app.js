@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
+const fs = require("fs");
 // const sequelize = require("sequelize");
 
 const adminData = require("./routes/admin");
@@ -19,6 +20,7 @@ const flash = require("connect-flash");
 const multer = require("multer");
 const helmet = require("helmet");
 const compression = require("compression");
+const morgan = require("morgan");
 /*
 
 // import database
@@ -62,7 +64,10 @@ const fileFilter = (req, file, cb) => {
     cb(null, false); // reject file
   }
 };
-
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, "access.log"),
+  { flags: a }
+);
 // declare view engine
 app.set("view engine", "ejs");
 // location of views
@@ -80,6 +85,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/images", express.static(path.join(__dirname, "images")));
 app.use(helmet());
 app.use(compression());
+app.use(morgan("combined", { stream: accessLogStream }));
 
 // create session middleware
 app.use(

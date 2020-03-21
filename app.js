@@ -17,6 +17,7 @@ const MongoSessionStore = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const flash = require("connect-flash");
 const multer = require("multer");
+const helmet = require("helmet");
 /*
 
 // import database
@@ -76,6 +77,7 @@ app.use(
 // allow access to static files
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/images", express.static(path.join(__dirname, "images")));
+app.use(helmet());
 
 // create session middleware
 app.use(
@@ -177,7 +179,7 @@ mongoose
   .connect(MONGODB_URI)
   .then(result => {
     app.listen(process.env.PORT || 8000);
-   // const server = app.listen(process.env.PORT || 8000);
+    // const server = app.listen(process.env.PORT || 8000);
     // const io = require("socket.io")(server);
     // io.on("connection", socket => {});
   })

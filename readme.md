@@ -18,6 +18,9 @@ npm run dev
 # Run in prod mode
 npm start
 ```
-
+#### Tech stacks used
+```
+NodeJs, ExpressJs, MongoDB, EJS
+```
 - Version: 1.0.0
 - License: MIT

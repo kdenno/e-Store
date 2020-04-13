@@ -1,6 +1,6 @@
 # e-Store
 
-> An e-commerce shop that manages user carts, checkout, user profiles and handles credit card payments with [Stripe API](https://stripe.com/gb). The project incorporates a tone of other features like file uploads, pagination, works with NoSQL databases(mongoDB), renders dynamic html with  EJS and sending emails 
+> An e-commerce shop that manages user carts, checkout, user profiles and handles payments with [Stripe API](https://stripe.com/gb). The project incorporates a tone of other features like file uploads, pagination, works with NoSQL databases(mongoDB), renders dynamic html with  EJS and sending emails 
 
 ## Usage
 Rename "config/config.env.env" to "config/config.env" and update the values/settings to your own
